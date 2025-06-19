@@ -28,7 +28,7 @@ __author__ = "Speech Synthesis Engineer"
 
 __all__ = [
     "HMM",
-    "HMMPyTorch", 
+    "HMMPyTorch",
     "HMMLayer",
     "GaussianHMMLayer",
     "create_transition_matrix",
