@@ -119,6 +119,7 @@ left_right = create_transition_matrix(5, "left_to_right")         # 순차 진�
 skip_matrix = create_transition_matrix(5, "left_to_right_skip")   # 상태 건너뛰기 허용
 circular = create_transition_matrix(5, "circular")               # 순환 구조
 ```
+생성된 전이 행렬은 각 행이 1로 정규화된 확률 분포입니다.
 
 ### 2. 가우시안 HMM (연속 특징용)
 

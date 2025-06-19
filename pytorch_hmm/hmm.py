@@ -108,10 +108,10 @@ class HMMPyTorch(HMM):
         
         # Backward recursion  
         for t in range(T-2, -1, -1):
-            # self.log_P[:, :, None] + log_obs[:, t+1, None, :] + log_backward[:, t+1, None, :]
-            # Shape: (K, K, 1) + (B, 1, K) + (B, 1, K) = (B, K, K)
-            combined = (self.log_P[:, :, None] + 
-                       log_obs[:, t+1, None, :] + 
+            # self.log_P broadcast to batch dimension
+            # Shape: (1, K, K) + (B, 1, K) + (B, 1, K) = (B, K, K)
+            combined = (self.log_P[None, :, :] +
+                       log_obs[:, t+1, None, :] +
                        log_backward[:, t+1, None, :])
             
             log_backward[:, t] = torch.logsumexp(combined, dim=2)

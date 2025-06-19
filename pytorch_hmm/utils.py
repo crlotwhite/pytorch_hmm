@@ -27,7 +27,8 @@ def create_transition_matrix(num_states: int,
         device: 텐서 device
         
     Returns:
-        Transition matrix of shape (num_states, num_states)
+        Transition matrix of shape (num_states, num_states). 각 행은 1로 정규화
+        되어 반환됩니다.
     """
     P = torch.zeros(num_states, num_states, device=device)
     
@@ -69,7 +70,10 @@ def create_transition_matrix(num_states: int,
         raise ValueError(f"Unknown transition_type: {transition_type}")
     
     # 행별로 정규화하여 확률 분포로 만들기
-    P = P / P.sum(dim=1, keepdim=True)
+    # 0으로만 채워진 행이 있을 경우 division-by-zero를 피하기 위해 epsilon을 더함
+    row_sums = P.sum(dim=1, keepdim=True)
+    row_sums = row_sums + (row_sums == 0).float() * 1e-8
+    P = P / row_sums
     
     return P
 

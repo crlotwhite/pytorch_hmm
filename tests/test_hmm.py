@@ -281,6 +281,12 @@ class TestUtilityFunctions:
             assert P.shape == (num_states, num_states)
             assert torch.allclose(P.sum(dim=1), torch.ones(num_states))
             assert torch.all(P >= 0)
+
+    def test_transition_matrix_row_normalization(self):
+        """행별 합이 1인지 확인"""
+        num_states = 3
+        P = create_transition_matrix(num_states, transition_type="ergodic")
+        assert torch.allclose(P.sum(dim=1), torch.ones(num_states))
     
     def test_compute_state_durations(self):
         """상태 지속시간 계산 테스트"""
