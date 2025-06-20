@@ -12,6 +12,7 @@ Main components:
 - SemiMarkovHMM: Hidden Semi-Markov Model with duration modeling
 - DTWAligner: Dynamic Time Warping alignment
 - CTCAligner: Connectionist Temporal Classification alignment
+- Speech quality evaluation metrics: MCD, F0 RMSE, alignment accuracy
 """
 
 from .hmm import HMM, HMMPyTorch
@@ -30,6 +31,19 @@ from .semi_markov import (
 from .alignment import (
     DTWAligner,
     CTCAligner
+)
+from .metrics import (
+    mel_cepstral_distortion,
+    f0_root_mean_square_error,
+    log_f0_rmse,
+    alignment_accuracy,
+    boundary_accuracy,
+    duration_accuracy,
+    spectral_distortion,
+    perceptual_evaluation_speech_quality,
+    comprehensive_speech_evaluation,
+    print_evaluation_summary,
+    save_evaluation_results
 )
 from .utils import (
     create_transition_matrix,
@@ -66,6 +80,19 @@ __all__ = [
     # Alignment algorithms
     "DTWAligner",
     "CTCAligner",
+    
+    # Evaluation metrics
+    "mel_cepstral_distortion",
+    "f0_root_mean_square_error",
+    "log_f0_rmse",
+    "alignment_accuracy",
+    "boundary_accuracy", 
+    "duration_accuracy",
+    "spectral_distortion",
+    "perceptual_evaluation_speech_quality",
+    "comprehensive_speech_evaluation",
+    "print_evaluation_summary",
+    "save_evaluation_results",
     
     # Utilities
     "create_transition_matrix",
