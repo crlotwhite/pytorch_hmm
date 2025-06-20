@@ -1,0 +1,72 @@
+# Development dependencies for PyTorch HMM
+# Install with: pip install -r requirements-dev.txt
+
+# Core testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-xdist>=2.5.0          # Parallel testing
+pytest-benchmark>=4.0.0      # Performance testing
+pytest-mock>=3.8.0           # Mocking utilities
+pytest-timeout>=2.1.0        # Test timeouts
+
+# Code quality and formatting
+black>=22.0.0                # Code formatting
+isort>=5.10.0                # Import sorting
+flake8>=5.0.0                # Linting
+mypy>=0.991                  # Type checking
+bandit>=1.7.0                # Security linting
+ruff>=0.0.260                # Fast Python linter
+pre-commit>=2.20.0           # Git hooks
+
+# Documentation
+sphinx>=5.0.0
+sphinx-rtd-theme>=1.0.0
+sphinxcontrib-napoleon>=0.7
+myst-parser>=0.18.0
+sphinx-autodoc-typehints>=1.19.0
+sphinx-copybutton>=0.5.0
+
+# Profiling and debugging
+memory-profiler>=0.60.0
+line-profiler>=4.0.0
+py-spy>=0.3.0
+psutil>=5.9.0
+nvitop>=1.0.0               # GPU monitoring
+
+# Jupyter notebooks for development
+jupyter>=1.0.0
+ipykernel>=6.15.0
+nbformat>=5.4.0
+nbconvert>=6.5.0
+jupyterlab>=3.4.0
+
+# Visualization and plotting
+matplotlib>=3.5.0
+seaborn>=0.11.0
+plotly>=5.10.0
+tensorboard>=2.10.0
+
+# Audio processing (optional for speech examples)
+torchaudio>=0.12.0
+librosa>=0.9.0
+soundfile>=0.10.0
+
+# Data manipulation
+pandas>=1.4.0
+numpy>=1.21.0
+
+# Model export and optimization
+onnx>=1.12.0
+onnxruntime>=1.12.0
+
+# Build and packaging
+build>=0.8.0
+twine>=4.0.0
+setuptools>=61.0
+wheel>=0.37.0
+
+# Development utilities
+tqdm>=4.64.0                # Progress bars
+rich>=12.0.0                # Rich console output
+click>=8.0.0                # CLI development
+typer>=0.6.0                # Modern CLI framework
