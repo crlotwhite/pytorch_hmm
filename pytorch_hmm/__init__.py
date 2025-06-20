@@ -20,13 +20,51 @@ Version 0.2.0 Features:
 - Advanced transition matrix utilities (skip-state, hierarchical, attention-based)
 - Memory-efficient implementations for large-scale processing
 - Comprehensive benchmarking and validation tools
+
+- NeuralHMM: Neural network-based HMM with contextual modeling
+- SemiMarkovHMM: Hidden Semi-Markov Model with duration modeling
+- DTWAligner: Dynamic Time Warping alignment
+- CTCAligner: Connectionist Temporal Classification alignment
+- Speech quality evaluation metrics: MCD, F0 RMSE, alignment accuracy
+
 """
 
 from .hmm import HMM, HMMPyTorch
 from .hmm_layer import HMMLayer, GaussianHMMLayer
+
 from .mixture_gaussian import MixtureGaussianHMMLayer
 from .hsmm import HSMMLayer, DurationConstrainedHMM
 from .streaming import StreamingHMMProcessor, AdaptiveLatencyController, StreamingResult
+
+from .neural import (
+    NeuralTransitionModel,
+    NeuralObservationModel, 
+    NeuralHMM,
+    ContextualNeuralHMM
+)
+from .semi_markov import (
+    DurationModel,
+    SemiMarkovHMM,
+    AdaptiveDurationHSMM
+)
+from .alignment import (
+    DTWAligner,
+    CTCAligner
+)
+from .metrics import (
+    mel_cepstral_distortion,
+    f0_root_mean_square_error,
+    log_f0_rmse,
+    alignment_accuracy,
+    boundary_accuracy,
+    duration_accuracy,
+    spectral_distortion,
+    perceptual_evaluation_speech_quality,
+    comprehensive_speech_evaluation,
+    print_evaluation_summary,
+    save_evaluation_results
+)
+
 from .utils import (
     # Basic transition matrix functions
     create_transition_matrix,
@@ -78,6 +116,36 @@ __all__ = [
     "StreamingResult",
     
     # Basic transition matrix utilities
+
+    # Neural HMM
+    "NeuralTransitionModel",
+    "NeuralObservationModel",
+    "NeuralHMM",
+    "ContextualNeuralHMM",
+    
+    # Semi-Markov HMM
+    "DurationModel",
+    "SemiMarkovHMM", 
+    "AdaptiveDurationHSMM",
+    
+    # Alignment algorithms
+    "DTWAligner",
+    "CTCAligner",
+    
+    # Evaluation metrics
+    "mel_cepstral_distortion",
+    "f0_root_mean_square_error",
+    "log_f0_rmse",
+    "alignment_accuracy",
+    "boundary_accuracy", 
+    "duration_accuracy",
+    "spectral_distortion",
+    "perceptual_evaluation_speech_quality",
+    "comprehensive_speech_evaluation",
+    "print_evaluation_summary",
+    "save_evaluation_results",
+    
+    # Utilities
     "create_transition_matrix",
     "create_left_to_right_matrix",
     "create_duration_constrained_matrix",
@@ -407,3 +475,4 @@ def auto_configure():
 
 # Initialize configuration on import
 _config_info = auto_configure()
+
