@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "pytorch-hmm"
@@ -26,13 +26,13 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Multimedia :: Sound/Audio :: Speech",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 requires-python = ">=3.8"
 dependencies = [
-    "torch>=1.12.0",
     "numpy>=1.21.0",
 ]
 
@@ -42,11 +42,14 @@ dev = [
     "pytest-cov>=4.0.0",
     "pytest-xdist>=2.5.0",
     "pytest-benchmark>=4.0.0",
+    "pytest-mock>=3.8.0",
+    "pytest-timeout>=2.1.0",
     "black>=22.0.0",
     "isort>=5.10.0",
     "flake8>=5.0.0",
     "mypy>=0.991",
     "bandit>=1.7.0",
+    "ruff>=0.0.260",
     "pre-commit>=2.20.0",
 ]
 docs = [
@@ -55,6 +58,7 @@ docs = [
     "sphinxcontrib-napoleon>=0.7",
     "myst-parser>=0.18.0",
     "sphinx-autodoc-typehints>=1.19.0",
+    "sphinx-copybutton>=0.5.0",
 ]
 audio = [
     "torchaudio>=0.12.0",
@@ -65,18 +69,44 @@ visualization = [
     "matplotlib>=3.5.0",
     "seaborn>=0.11.0",
     "plotly>=5.10.0",
+    "tensorboard>=2.10.0",
 ]
 benchmarks = [
     "memory-profiler>=0.60.0",
+    "line-profiler>=4.0.0",
+    "py-spy>=0.3.0",
     "psutil>=5.9.0",
+    "nvitop>=1.0.0",
     "pandas>=1.4.0",
+]
+notebooks = [
+    "jupyter>=1.0.0",
+    "ipykernel>=6.15.0",
+    "nbformat>=5.4.0",
+    "nbconvert>=6.5.0",
+    "jupyterlab>=3.4.0",
 ]
 onnx = [
     "onnx>=1.12.0",
     "onnxruntime>=1.12.0",
 ]
+utils = [
+    "tqdm>=4.64.0",
+    "rich>=12.0.0",
+    "click>=8.0.0",
+    "typer>=0.6.0",
+]
+# PyTorch accelerator 선택 옵션
+cpu = [
+    "torch>=1.12.0",
+    "numpy>=1.21.0",
+]
+cuda = [
+    "torch>=1.12.0",
+    "numpy>=1.21.0",
+]
 all = [
-    "pytorch-hmm[dev,docs,audio,visualization,benchmarks,onnx]",
+    "pytorch-hmm[dev,docs,audio,visualization,benchmarks,notebooks,onnx,utils]",
 ]
 
 [project.urls]
@@ -88,12 +118,47 @@ Changelog = "https://github.com/crlotwhite/pytorch_hmm/blob/main/CHANGELOG.md"
 
 [project.scripts]
 pytorch-hmm-test = "pytorch_hmm:run_quick_test"
+pytorch-hmm-demo = "examples.advanced_features_demo:main"
 
-[tool.setuptools.packages.find]
-include = ["pytorch_hmm*"]
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-xdist>=2.5.0",
+    "pytest-benchmark>=4.0.0",
+    "pytest-mock>=3.8.0",
+    "pytest-timeout>=2.1.0",
+    "black>=22.0.0",
+    "isort>=5.10.0",
+    "ruff>=0.0.260",
+    "mypy>=0.991",
+    "pre-commit>=2.20.0",
+]
+# PyTorch accelerator 충돌 방지 (CPU와 CUDA 동시 설치 방지)
+conflicts = [
+    [
+        { extra = "cpu" },
+        { extra = "cuda" },
+    ],
+]
 
-[tool.setuptools.package-data]
-pytorch_hmm = ["py.typed"]
+[tool.uv.sources]
+# PyTorch 특화 소스 설정 - optional dependencies에 따른 조건부 소스 선택
+torch = [
+    { index = "pytorch-cpu", extra = "cpu" },
+    { index = "pytorch-cu124", extra = "cuda" },
+]
+
+# PyTorch 인덱스 정의
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
 
 [tool.black]
 line-length = 88

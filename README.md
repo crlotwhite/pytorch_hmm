@@ -66,6 +66,45 @@ PyTorch 기반의 종합적인 Hidden Markov Model 라이브러리입니다. **�
 
 ## 📦 설치
 
+### uv를 사용한 설치 (권장)
+
+```bash
+# 기본 설치 (CPU 버전)
+uv add pytorch-hmm[cpu]
+
+# GPU 지원 (CUDA 12.4)
+uv add pytorch-hmm[cuda]
+
+# 개발 환경 설정
+git clone https://github.com/crlotwhite/pytorch_hmm.git
+cd pytorch_hmm
+uv sync --extra dev
+
+# 특정 기능 그룹 설치
+uv sync --extra audio      # 음성 처리
+uv sync --extra visualization  # 시각화
+uv sync --extra benchmarks # 성능 벤치마크
+```
+
+### PyTorch 버전 선택
+
+이 라이브러리는 플랫폼별로 최적화된 PyTorch 버전을 자동으로 선택합니다:
+
+- **macOS**: CPU 전용 버전
+- **Linux/Windows**: CUDA 12.4 지원 버전 (GPU 가용시)
+
+수동으로 PyTorch 버전을 선택하려면:
+
+```bash
+# CPU 전용 강제 설치
+uv sync --extra cpu
+
+# CUDA 버전 강제 설치
+uv sync --extra cuda
+```
+
+### pip를 사용한 설치
+
 ```bash
 # 기본 설치
 pip install pytorch-hmm
@@ -80,14 +119,6 @@ pip install pytorch-hmm[all]
 git clone https://github.com/crlotwhite/pytorch_hmm.git
 cd pytorch_hmm
 pip install -e .[dev]
-
-# 모든 기능 포함
-pip install pytorch-hmm[all]
-
-# 개발 버전
-git clone https://github.com/crlotwhite/pytorch_hmm.git
-cd pytorch_hmm
-pip install -e ".[all]"
 ```
 
 ### 선택적 의존성
@@ -138,7 +169,7 @@ from pytorch_hmm import MixtureGaussianHMMLayer
 # 복잡한 음향 모델링
 model = MixtureGaussianHMMLayer(
     num_states=20,          # 20개 음소
-    feature_dim=80,         # 80차원 멜 스펙트로그램  
+    feature_dim=80,         # 80차원 멜 스펙트로그램
     num_components=4,       # 4개 가우시안 믹스처
     covariance_type='diag'  # 대각 공분산
 )
@@ -192,17 +223,17 @@ controller = AdaptiveLatencyController(target_latency_ms=30.0)
 for i in range(100):
     # 10ms 오디오 청크
     audio_chunk = torch.randn(160, 80)
-    
+
     # 처리
     result = processor.process_chunk(audio_chunk)
-    
+
     if result.status == 'decoded':
         print(f"상태: {result.decoded_states}")
         print(f"처리 시간: {result.processing_time_ms:.1f}ms")
-        
+
         # 성능 적응
         recommendations = controller.update(
-            result.processing_time_ms, 
+            result.processing_time_ms,
             result.buffer_size
         )
 ```
@@ -241,7 +272,7 @@ from pytorch_hmm.utils import (
 skip_transitions = create_skip_state_matrix(
     num_states=20,
     self_loop_prob=0.5,    # 낮은 유지 확률
-    forward_prob=0.4,      # 높은 전진 확률  
+    forward_prob=0.4,      # 높은 전진 확률
     skip_prob=0.1,         # 건너뛰기 허용
     max_skip=2
 )
@@ -442,54 +473,54 @@ from pytorch_hmm import HMMLayer, DurationModel, DTWAligner
 class AdvancedTTSModel(nn.Module):
     def __init__(self, vocab_size, num_phonemes, acoustic_dim):
         super().__init__()
-        
+
         # 텍스트 인코더
         self.text_encoder = nn.Embedding(vocab_size, 256)
-        
+
         # 지속시간 예측기 (HSMM 기반)
         self.duration_predictor = DurationModel(
             num_states=num_phonemes,
             max_duration=30,
             distribution_type='neural'
         )
-        
+
         # HMM 정렬 레이어
         self.alignment_layer = HMMLayer(
             num_states=num_phonemes,
             learnable_transitions=True,
             transition_type="left_to_right"
         )
-        
+
         # 음향 디코더
         self.acoustic_decoder = nn.Sequential(
             nn.Linear(256, 512),
             nn.ReLU(),
             nn.Linear(512, acoustic_dim)
         )
-        
+
         # DTW 후처리
         self.dtw_aligner = DTWAligner(distance_fn='cosine')
-    
+
     def forward(self, text_sequence, target_length=None):
         # 텍스트 인코딩
         text_emb = self.text_encoder(text_sequence)
-        
+
         # 지속시간 예측
         phoneme_ids = text_sequence  # 간단화
         predicted_durations = self.duration_predictor.sample(phoneme_ids)
-        
+
         # HMM 정렬
         aligned_features = self.alignment_layer(text_emb)
-        
+
         # 음향 특징 생성
         acoustic_features = self.acoustic_decoder(aligned_features)
-        
+
         # DTW로 길이 조정 (옵션)
         if target_length is not None:
             target_features = torch.randn(target_length, acoustic_features.shape[-1])
             path_i, path_j, _ = self.dtw_aligner(acoustic_features[0], target_features)
             # 길이 조정 로직...
-        
+
         return acoustic_features, predicted_durations
 
 # 사용 예제
@@ -511,7 +542,7 @@ from pytorch_hmm import create_transition_matrix
 # 다양한 전이 패턴
 transition_types = [
     "ergodic",              # 완전 연결
-    "left_to_right",        # 순차 진행  
+    "left_to_right",        # 순차 진행
     "left_to_right_skip",   # 건너뛰기 허용
     "circular"              # 순환 구조
 ]
@@ -550,7 +581,7 @@ def process_large_batch(hmm, data_loader):
 
 ### 처리 속도 (RTX 3080 기준)
 - **MixtureGaussianHMM**: ~18,000 frames/sec
-- **HSMM**: ~12,000 frames/sec  
+- **HSMM**: ~12,000 frames/sec
 - **StreamingHMM**: ~25,000 frames/sec
 - **실시간 배율**: 150-400x (실시간 80fps 기준)
 
@@ -650,7 +681,7 @@ python examples/benchmark.py
 # 빠른 데모 실행
 pytorch-hmm-demo
 
-# 통합 테스트 실행  
+# 통합 테스트 실행
 pytorch-hmm-test
 
 ```
@@ -706,7 +737,7 @@ pytest tests/ -v
 
 ## 🤝 기여하기
 
-PyTorch HMM 프로젝트에 기여해주세요! 
+PyTorch HMM 프로젝트에 기여해주세요!
 
 - 🐛 **버그 리포트**: [Issues](https://github.com/crlotwhite/pytorch_hmm/issues)
 - 💡 **기능 제안**: [Discussions](https://github.com/crlotwhite/pytorch_hmm/discussions)
@@ -757,7 +788,7 @@ PyTorch HMM 프로젝트에 기여해주세요!
 
 ### 핵심 논문
 - Rabiner, L. R. (1989). "A tutorial on hidden Markov models"
-- Yu, K., et al. (2010). "Semi-Markov models for speech synthesis"  
+- Yu, K., et al. (2010). "Semi-Markov models for speech synthesis"
 - Cuturi, M., & Blondel, M. (2017). "Soft-DTW: a Differentiable Loss Function for Time-Series"
 - Graves, A., et al. (2006). "Connectionist temporal classification"
 
@@ -783,10 +814,10 @@ PyTorch HMM 프로젝트에 기여해주세요!
 
 이번 **v0.2.0** 업데이트는 PyTorch HMM 라이브러리를 **연구용 도구에서 프로덕션 레디 솔루션**으로 크게 발전시켰습니다:
 
-🧠 **Neural HMM**: 컨텍스트 인식 모델링으로 기존 HMM의 한계 극복  
-⏱️ **Semi-Markov HMM**: 명시적 지속시간 모델링으로 자연스러운 음성 합성  
-🎯 **고급 정렬**: DTW와 CTC로 다양한 정렬 needs 지원  
-📊 **종합 평가**: MCD, F0 RMSE 등 표준 음성 평가 메트릭  
+🧠 **Neural HMM**: 컨텍스트 인식 모델링으로 기존 HMM의 한계 극복
+⏱️ **Semi-Markov HMM**: 명시적 지속시간 모델링으로 자연스러운 음성 합성
+🎯 **고급 정렬**: DTW와 CTC로 다양한 정렬 needs 지원
+📊 **종합 평가**: MCD, F0 RMSE 등 표준 음성 평가 메트릭
 🚀 **실시간 성능**: GPU 가속으로 실시간 음성 처리 가능
 
 ⭐ **이 프로젝트가 도움이 되었다면 Star를 눌러주세요!** ⭐
