@@ -8,10 +8,29 @@ Main components:
 - HMMPyTorch: PyTorch implementation with autograd support
 - HMMLayer: nn.Module wrapper for easy integration
 - GaussianHMMLayer: HMM with Gaussian observation model
+- NeuralHMM: Neural network-based HMM with contextual modeling
+- SemiMarkovHMM: Hidden Semi-Markov Model with duration modeling
+- DTWAligner: Dynamic Time Warping alignment
+- CTCAligner: Connectionist Temporal Classification alignment
 """
 
 from .hmm import HMM, HMMPyTorch
 from .hmm_layer import HMMLayer, GaussianHMMLayer
+from .neural import (
+    NeuralTransitionModel,
+    NeuralObservationModel, 
+    NeuralHMM,
+    ContextualNeuralHMM
+)
+from .semi_markov import (
+    DurationModel,
+    SemiMarkovHMM,
+    AdaptiveDurationHSMM
+)
+from .alignment import (
+    DTWAligner,
+    CTCAligner
+)
 from .utils import (
     create_transition_matrix,
     create_left_to_right_matrix,
@@ -23,14 +42,32 @@ from .utils import (
     interpolate_features
 )
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Speech Synthesis Engineer"
 
 __all__ = [
+    # Core HMM
     "HMM",
     "HMMPyTorch", 
     "HMMLayer",
     "GaussianHMMLayer",
+    
+    # Neural HMM
+    "NeuralTransitionModel",
+    "NeuralObservationModel",
+    "NeuralHMM",
+    "ContextualNeuralHMM",
+    
+    # Semi-Markov HMM
+    "DurationModel",
+    "SemiMarkovHMM", 
+    "AdaptiveDurationHSMM",
+    
+    # Alignment algorithms
+    "DTWAligner",
+    "CTCAligner",
+    
+    # Utilities
     "create_transition_matrix",
     "create_left_to_right_matrix",
     "create_duration_constrained_matrix",
