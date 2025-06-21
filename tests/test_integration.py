@@ -444,11 +444,12 @@ def test_performance_benchmark():
         
         # DTW 벤치마크 (단일 시퀀스)
         dtw_aligner = DTWAligner()
-        ref_seq = torch.randn(num_states, obs_dim, device=device)
+        ref_seq = torch.randn(seq_len//2, num_states, device=device)  # 차원 맞춤
+        query_seq = observations[0]  # (seq_len, num_states)
         
         start_time = time.time()
         with torch.no_grad():
-            path_i, path_j, _ = dtw_aligner(ref_seq, observations[0])
+            path_i, path_j, _ = dtw_aligner(ref_seq, query_seq)
         dtw_time = time.time() - start_time
         
         # 결과 출력
