@@ -287,7 +287,7 @@ class TestAdvancedFeatures:
         # 5. Neural HMM으로 고급 모델링
         neural_hmm = NeuralHMM(
             num_states=num_states,
-            observation_dim=obs_dim,
+            observation_dim=num_states,
             context_dim=8,
             hidden_dim=32
         )
@@ -417,7 +417,7 @@ def test_performance_benchmark():
         print(f"\nTesting: batch={batch_size}, seq={seq_len}, obs={obs_dim}, states={num_states}")
         
         # 데이터 준비
-        observations = torch.randn(batch_size, seq_len, obs_dim, device=device)
+        observations = torch.randn(batch_size, seq_len, num_states, device=device)
         context = torch.randn(batch_size, seq_len, obs_dim//2, device=device)
         
         # Basic HMM 벤치마크
@@ -432,7 +432,7 @@ def test_performance_benchmark():
         # Neural HMM 벤치마크
         neural_hmm = NeuralHMM(
             num_states=num_states,
-            observation_dim=obs_dim,
+            observation_dim=num_states,
             context_dim=obs_dim//2,
             hidden_dim=64
         ).to(device)

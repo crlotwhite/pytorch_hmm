@@ -144,7 +144,7 @@ class DurationModel(nn.Module):
             
             # 가우시안 분포 PDF (절단된)
             log_probs = -0.5 * torch.log(2 * math.pi * std**2)
-            log_probs -= 0.5 * ((durations - mean) / std)**2
+            log_probs = log_probs - 0.5 * ((durations - mean) / std)**2
         
         # 최소 지속시간 제약
         mask = durations >= self.min_duration
@@ -611,8 +611,8 @@ class SemiMarkovHMM(nn.Module):
                 mean = self.observation_means[current_state]
                 std = torch.exp(0.5 * self.observation_logvars[current_state])
                 
-                segment_obs = torch.normal(mean.unsqueeze(0).expand(duration, -1), 
-                                         std.unsqueeze(0).expand(duration, -1))
+                segment_obs = torch.normal(mean.unsqueeze(0).expand(int(duration), -1), 
+                                         std.unsqueeze(0).expand(int(duration), -1))
                 observations.append(segment_obs)
             
             total_length += duration

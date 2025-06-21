@@ -287,7 +287,6 @@ class MixtureGaussianHMMLayer(nn.Module):
         
         return L.view(self.num_states, self.num_components, self.feature_dim, self.feature_dim)
     
-    @torch.jit.script_method
     def _viterbi_decode(self, obs_log_probs: torch.Tensor, 
                        log_transitions: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         """

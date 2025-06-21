@@ -6,13 +6,13 @@ Author: Speech Synthesis Engineer
 Version: 0.2.0
 """
 
+import math
+import warnings
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions import Gamma, Poisson, Weibull
-import math
 from typing import Tuple, Optional, List, Union
-import warnings
 
 from .hmm import HMMPyTorch
 
@@ -370,11 +370,15 @@ class HSMMLayer(nn.Module):
         
         current_state = initial_state
         t = 0
+        max_iterations = length * 2  # 안전장치: 최대 반복 횟수 제한
+        iteration_count = 0
         
         transition_matrix = self.get_transition_matrix()
         duration_probs = self.get_duration_probabilities()
         
-        while t < length:
+        while t < length and iteration_count < max_iterations:
+            iteration_count += 1
+            
             # Sample duration for current state
             duration_dist = torch.distributions.Categorical(duration_probs[current_state])
             duration = duration_dist.sample().item() + self.min_duration
@@ -397,10 +401,25 @@ class HSMMLayer(nn.Module):
                 # Sample next state (excluding current state)
                 valid_transitions = transition_matrix[current_state].clone()
                 valid_transitions[current_state] = 0  # No self-transitions
+                
+                # 안전장치: valid transitions가 모두 0인 경우 처리
+                if valid_transitions.sum() < 1e-8:
+                    # 모든 상태로의 전이를 허용 (균등 분포)
+                    valid_transitions = torch.ones_like(valid_transitions) / self.num_states
+                    valid_transitions[current_state] = 0  # 현재 상태는 여전히 제외
+                    if valid_transitions.sum() < 1e-8:
+                        # 단일 상태 모델인 경우
+                        break
+                
                 valid_transitions = valid_transitions / valid_transitions.sum()
                 
                 next_state_dist = torch.distributions.Categorical(valid_transitions)
                 current_state = next_state_dist.sample().item()
+        
+        # 안전장치 경고
+        if iteration_count >= max_iterations:
+            warnings.warn(f"generate_sequence reached maximum iterations ({max_iterations}). "
+                         f"Generated {t}/{length} timesteps.")
         
         return states, observations
     
